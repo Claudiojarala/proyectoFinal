@@ -2,9 +2,6 @@
 #include "CommandInterface.h"
 #include <iostream>
 #include <sstream>
-#include <vector>
-
-using namespace std;
 
 CommandInterface::CommandInterface() : dbStore(11) {
     trie.insert("create");
@@ -17,10 +14,10 @@ CommandInterface::CommandInterface() : dbStore(11) {
     trie.insert("load");
 }
 
-void CommandInterface::processCommand(const string &input) {
-    istringstream iss(input);
-    vector<string> tokens;
-    string token;
+void CommandInterface::processCommand(const std::string &input) {
+    std::istringstream iss(input);
+    std::vector<std::string> tokens;
+    std::string token;
     while (iss >> token) {
         tokens.push_back(token);
     }
@@ -28,137 +25,137 @@ void CommandInterface::processCommand(const string &input) {
         return;
 
     if (tokens[0] != "RR") {
-        cout << "El comando debe iniciar con 'RR'" << endl;
+        std::cout << "El comando debe iniciar con 'RR'" << std::endl;
         return;
     }
     if (tokens.size() < 2) {
-        cout << "Comando incompleto." << endl;
+        std::cout << "Comando incompleto." << std::endl;
         return;
     }
 
-    string command = tokens[1];
+    std::string command = tokens[1];
     if (!trie.search(command)) {
-        string suggestion = trie.suggest(command);
+        std::string suggestion = trie.suggest(command);
         if (!suggestion.empty()) {
-            cout << "Comando desconocido: " << command << endl;
-            cout << "¿Quiso decir?: " << suggestion << "." << endl;
+            std::cout << "Comando desconocido: " << command << std::endl;
+            std::cout << "¿Quiso decir?: " << suggestion << "." << std::endl;
         } else {
-            cout << "Comando desconocido: " << command << endl;
+            std::cout << "Comando desconocido: " << command << std::endl;
         }
         return;
     }
 
     if (command == "create") {
         if (tokens.size() < 5) {
-            cout << "Uso: RR create <nombreBD> <tipoDato> <capacidad>" << endl;
+            std::cout << "Uso: RR create <nombreBD> <tipoDato> <capacidad>" << std::endl;
             return;
         }
-        string name = tokens[2];
-        string dataType = tokens[3];
+        std::string name = tokens[2];
+        std::string dataType = tokens[3];
         int cap = atoi(tokens[4].c_str());
         Database* db = new Database(name, dataType, cap);
         if (dbStore.insert(db))
-            cout << "Base de datos '" << name << "' creada exitosamente." << endl;
+            std::cout << "Base de datos '" << name << "' creada exitosamente." << std::endl;
         else {
-            cout << "Error al crear la base de datos." << endl;
+            std::cout << "Error al crear la base de datos." << std::endl;
             delete db;
         }
 
     } else if (command == "select") {
         if (tokens.size() < 4) {
-            cout << "Uso: RR select <nombreBD> <índice>" << endl;
+            std::cout << "Uso: RR select <nombreBD> <índice>" << std::endl;
             return;
         }
-        string name = tokens[2];
+        std::string name = tokens[2];
         int index = atoi(tokens[3].c_str());
         Database* db = dbStore.find(name);
         if (!db) {
-            cout << "Base de datos '" << name << "' no encontrada." << endl;
+            std::cout << "Base de datos '" << name << "' no encontrada." << std::endl;
             return;
         }
-        string value = db->getValue(index);
+        std::string value = db->getValue(index);
         if (!value.empty())
-            cout << "Valor en el nodo " << index << " es: " << value << endl;
+            std::cout << "Valor en el nodo " << index << " es: " << value << std::endl;
         else
-            cout << "Índice fuera de rango." << endl;
+            std::cout << "Índice fuera de rango." << std::endl;
 
     } else if (command == "insert") {
         if (tokens.size() < 4) {
-            cout << "Uso: RR insert <nombreBD> <valor>" << endl;
+            std::cout << "Uso: RR insert <nombreBD> <valor>" << std::endl;
             return;
         }
-        string name = tokens[2];
-        string value = tokens[3];
+        std::string name = tokens[2];
+        std::string value = tokens[3];
         Database* db = dbStore.find(name);
         if (!db) {
-            cout << "Base de datos '" << name << "' no encontrada." << endl;
+            std::cout << "Base de datos '" << name << "' no encontrada." << std::endl;
             return;
         }
         if (db->insertValue(value))
-            cout << "Valor '" << value << "' insertado en la base de datos '" << name << "'." << endl;
+            std::cout << "Valor '" << value << "' insertado en la base de datos '" << name << "'." << std::endl;
         else
-            cout << "La cola está llena." << endl;
+            std::cout << "La cola está llena." << std::endl;
 
     } else if (command == "update") {
         if (tokens.size() < 5) {
-            cout << "Uso: RR update <nombreBD> <índice> <nuevoValor>" << endl;
+            std::cout << "Uso: RR update <nombreBD> <índice> <nuevoValor>" << std::endl;
             return;
         }
-        string name = tokens[2];
+        std::string name = tokens[2];
         int index = atoi(tokens[3].c_str());
         double newVal = atof(tokens[4].c_str());
         Database* db = dbStore.find(name);
         if (!db) {
-            cout << "Base de datos '" << name << "' no encontrada." << endl;
+            std::cout << "Base de datos '" << name << "' no encontrada." << std::endl;
             return;
         }
         if (db->queue->updateAt(index, newVal))
-            cout << "Valor en el nodo " << index << " actualizado a " << newVal << "." << endl;
+            std::cout << "Valor en el nodo " << index << " actualizado a " << newVal << "." << std::endl;
         else
-            cout << "Índice fuera de rango." << endl;
+            std::cout << "Índice fuera de rango." << std::endl;
 
     } else if (command == "delete") {
         if (tokens.size() < 3) {
-            cout << "Uso: RR delete <nombreBD>" << endl;
+            std::cout << "Uso: RR delete <nombreBD>" << std::endl;
             return;
         }
-        string name = tokens[2];
+        std::string name = tokens[2];
         if (dbStore.remove(name))
-            cout << "Base de datos '" << name << "' eliminada." << endl;
+            std::cout << "Base de datos '" << name << "' eliminada." << std::endl;
         else
-            cout << "Base de datos '" << name << "' no encontrada." << endl;
+            std::cout << "Base de datos '" << name << "' no encontrada." << std::endl;
 
     } else if (command == "print") {
         if (tokens.size() < 3) {
-            cout << "Uso: RR print <nombreBD>" << endl;
+            std::cout << "Uso: RR print <nombreBD>" << std::endl;
             return;
         }
-        string name = tokens[2];
+        std::string name = tokens[2];
         Database* db = dbStore.find(name);
         if (!db) {
-            cout << "Base de datos '" << name << "' no encontrada." << endl;
+            std::cout << "Base de datos '" << name << "' no encontrada." << std::endl;
             return;
         }
-        cout << "Contenido de la base de datos '" << name << "': ";
+        std::cout << "Contenido de la base de datos '" << name << "': ";
         db->queue->printQueue();
 
     } else if (command == "save") {
         if (tokens.size() < 3) {
-            cout << "Uso: RR save <filename>" << endl;
+            std::cout << "Uso: RR save <filename>" << std::endl;
             return;
         }
-        string filename = tokens[2];
+        std::string filename = tokens[2];
         dbStore.guardarEnArchivo(filename);
 
     } else if (command == "load") {
         if (tokens.size() < 3) {
-            cout << "Uso: RR load <filename>" << endl;
+            std::cout << "Uso: RR load <filename>" << std::endl;
             return;
         }
-        string filename = tokens[2];
+        std::string filename = tokens[2];
         if (dbStore.cargarDesdeArchivo(filename))
-            cout << "Tabla cargada correctamente." << endl;
+            std::cout << "Tabla cargada correctamente." << std::endl;
         else
-            cout << "Error al cargar la tabla." << endl;
+            std::cout << "Error al cargar la tabla." << std::endl;
     }
 }
