@@ -1,8 +1,10 @@
-#ifndef CUCKOO_HASH_H
-#define CUCKOO_HASH_H
+#ifndef CUCKOOHASH_H
+#define CUCKOOHASH_H
 
 #include <vector>
 #include "Database.h"
+
+using namespace std;
 
 class CuckooHash {
 private:
@@ -19,6 +21,7 @@ private:
 public:
     CuckooHash(int cap = 11);
     ~CuckooHash();
+
     bool insert(Database* db);
     Database* find(const string &name);
     bool remove(const string &name);
@@ -26,4 +29,4 @@ public:
     bool cargarDesdeArchivo(const string &filename);
 };
 
-#endif // CUCKOO_HASH_H
+#endif // CUCKOOHASH_H
