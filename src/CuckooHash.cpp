@@ -143,18 +143,6 @@ bool CuckooHash::cargarDesdeArchivo(const string &filename) {
         cerr << "No se pudo abrir el archivo " << filename << " para cargar." << endl;
         return false;
     }
-    for (auto &db : table1) {
-        if (db) {
-            delete db;
-        }
-    }
-    for (auto &db : table2) {
-        if (db) {
-            delete db;
-        }
-    }
-    table1.clear();
-    table2.clear();
 
     infile.read(reinterpret_cast<char*>(&capacity), sizeof(capacity));
     infile.read(reinterpret_cast<char*>(&totalElements), sizeof(totalElements));
