@@ -2,12 +2,14 @@
 #include <iostream>
 #include <string>
 
+using namespace std;
+
 int main() {
     CommandInterface ci;
-    std::string line;
+    string line;
 
-    std::cout << "Ingrese comandos (escriba 'exit' para salir):" << std::endl;
-    while (std::getline(std::cin, line)) {
+    cout << "Ingrese comandos (escriba 'exit' para salir):" << endl;
+    while (getline(cin, line)) {
         if (line == "exit")
             break;
         ci.processCommand(line);
