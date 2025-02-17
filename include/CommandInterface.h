@@ -5,6 +5,8 @@
 #include "CuckooHash.h"
 #include "Trie.h"
 
+using namespace std;
+
 class CommandInterface {
 private:
     Trie trie;
@@ -12,7 +14,7 @@ private:
 
 public:
     CommandInterface();
-    void processCommand(const std::string &input);
+    void processCommand(const string &input);
 };
 
 #endif // COMMANDINTERFACE_H
