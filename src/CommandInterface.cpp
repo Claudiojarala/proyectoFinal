@@ -1,167 +1,164 @@
-#include "CuckooHash.h"
+#include "CommandInterface.h"
 #include <iostream>
-#include <fstream>
+#include <sstream>
+#include <vector>
 
 using namespace std;
 
-CuckooHash::CuckooHash(int cap) : capacity(cap), totalElements(0) {
-    table1.resize(capacity, nullptr);
-    table2.resize(capacity, nullptr);
+CommandInterface::CommandInterface() : dbStore(11) {
+    // Se insertan los comandos permitidos en el trie.
+    trie.insert("create");
+    trie.insert("select");
+    trie.insert("insert");
+    trie.insert("update");
+    trie.insert("delete");
+    trie.insert("print");
+    trie.insert("save");
+    trie.insert("load");
 }
 
-CuckooHash::~CuckooHash() {
-    for (auto db : table1) {
-        if (db) delete db;
+void CommandInterface::processCommand(const string &input) {
+    istringstream iss(input);
+    vector<string> tokens;
+    string token;
+    while (iss >> token) {
+        tokens.push_back(token);
     }
-    for (auto db : table2) {
-        if (db) delete db;
-    }
-}
+    if (tokens.empty())
+        return;
 
-int CuckooHash::hash1(const string &key) const {
-    hash<string> hash_fn;
-    return hash_fn(key) % capacity;
-}
-
-int CuckooHash::hash2(const string &key) const {
-    hash<string> hash_fn;
-    return (hash_fn(key) * 7) % capacity;
-}
-
-void CuckooHash::rehash() {
-    int oldCapacity = capacity;
-    capacity *= 2;
-    vector<Database*> oldTable1 = table1;
-    vector<Database*> oldTable2 = table2;
-
-    table1.clear();
-    table2.clear();
-    table1.resize(capacity, nullptr);
-    table2.resize(capacity, nullptr);
-    totalElements = 0;
-
-    for (int i = 0; i < oldCapacity; i++) {
-        if (oldTable1[i] != nullptr)
-            insert(oldTable1[i]);
-        if (oldTable2[i] != nullptr)
-            insert(oldTable2[i]);
-    }
-}
-
-bool CuckooHash::insert(Database* db) {
-    string key = db->name;
-    int loopCount = 0;
-    Database* item = db;
-    bool inTable1 = true;
-    while (loopCount < maxLoop) {
-        if (inTable1) {
-            int pos = hash1(item->name);
-            if (table1[pos] == nullptr) {
-                table1[pos] = item;
-                totalElements++;
-                return true;
-            } else {
-                swap(item, table1[pos]);
-                inTable1 = false;
-            }
-        } else {
-            int pos = hash2(item->name);
-            if (table2[pos] == nullptr) {
-                table2[pos] = item;
-                totalElements++;
-                return true;
-            } else {
-                swap(item, table2[pos]);
-                inTable1 = true;
-            }
-        }
-        loopCount++;
-    }
-    rehash();
-    return insert(item);
-}
-
-Database* CuckooHash::find(const string &name) {
-    int pos1 = hash1(name);
-    if (pos1 < (int)table1.size() && table1[pos1] && table1[pos1]->name == name)
-        return table1[pos1];
-    int pos2 = hash2(name);
-    if (pos2 < (int)table2.size() && table2[pos2] && table2[pos2]->name == name)
-        return table2[pos2];
-    return nullptr;
-}
-
-bool CuckooHash::remove(const string &name) {
-    int pos1 = hash1(name);
-    if (pos1 < (int)table1.size() && table1[pos1] && table1[pos1]->name == name) {
-        delete table1[pos1];
-        table1[pos1] = nullptr;
-        totalElements--;
-        return true;
-    }
-    int pos2 = hash2(name);
-    if (pos2 < (int)table2.size() && table2[pos2] && table2[pos2]->name == name) {
-        delete table2[pos2];
-        table2[pos2] = nullptr;
-        totalElements--;
-        return true;
-    }
-    return false;
-}
-
-void CuckooHash::guardarEnArchivo(const string &filename) const {
-    ofstream outfile(filename, ios::binary | ios::trunc);
-    if (!outfile.is_open()) {
-        cerr << "No se pudo abrir el archivo " << filename << " para guardar." << endl;
+    if (tokens[0] != "RR") {
+        cout << "El comando debe iniciar con 'RR'" << endl;
         return;
     }
-    outfile.write(reinterpret_cast<const char*>(&capacity), sizeof(capacity));
-    outfile.write(reinterpret_cast<const char*>(&totalElements), sizeof(totalElements));
-    for (int i = 0; i < capacity; ++i) {
-        bool exists = (table1[i] != nullptr);
-        outfile.write(reinterpret_cast<const char*>(&exists), sizeof(exists));
-        if (exists) {
-            table1[i]->serialize(outfile);
-        }
+    if (tokens.size() < 2) {
+        cout << "Comando incompleto." << endl;
+        return;
     }
-    for (int i = 0; i < capacity; ++i) {
-        bool exists = (table2[i] != nullptr);
-        outfile.write(reinterpret_cast<const char*>(&exists), sizeof(exists));
-        if (exists) {
-            table2[i]->serialize(outfile);
-        }
-    }
-    outfile.close();
-    cout << "Tabla guardada en archivo: " << filename << endl;
-}
 
-bool CuckooHash::cargarDesdeArchivo(const string &filename) {
-    ifstream infile(filename, ios::binary);
-    if (!infile.is_open()) {
-        cerr << "No se pudo abrir el archivo " << filename << " para cargar." << endl;
-        return false;
-    }
-    infile.read(reinterpret_cast<char*>(&capacity), sizeof(capacity));
-    infile.read(reinterpret_cast<char*>(&totalElements), sizeof(totalElements));
-    table1.resize(capacity, nullptr);
-    table2.resize(capacity, nullptr);
-    for (int i = 0; i < capacity; ++i) {
-        bool exists;
-        infile.read(reinterpret_cast<char*>(&exists), sizeof(exists));
-        if (exists) {
-            Database* db = Database::deserialize(infile);
-            table1[i] = db;
+    string command = tokens[1];
+    if (!trie.search(command)) {
+        string suggestion = trie.suggest(command);
+        if (!suggestion.empty()) {
+            cout << "Comando desconocido: " << command << endl;
+            cout << "¿Quiso decir?: " << suggestion << "." << endl;
+        } else {
+            cout << "Comando desconocido: " << command << endl;
         }
+        return;
     }
-    for (int i = 0; i < capacity; ++i) {
-        bool exists;
-        infile.read(reinterpret_cast<char*>(&exists), sizeof(exists));
-        if (exists) {
-            Database* db = Database::deserialize(infile);
-            table2[i] = db;
+
+    if (command == "create") {
+        if (tokens.size() < 5) {
+            cout << "Uso: RR create <nombreBD> <tipoDato> <capacidad>" << endl;
+            return;
         }
+        string name = tokens[2];
+        string dataType = tokens[3];
+        int cap = atoi(tokens[4].c_str());
+        Database* db = new Database(name, dataType, cap);
+        if (dbStore.insert(db))
+            cout << "Base de datos '" << name << "' creada exitosamente." << endl;
+        else {
+            cout << "Error al crear la base de datos." << endl;
+            delete db;
+        }
+
+    } else if (command == "select") {
+        if (tokens.size() < 4) {
+            cout << "Uso: RR select <nombreBD> <índice>" << endl;
+            return;
+        }
+        string name = tokens[2];
+        int index = atoi(tokens[3].c_str());
+        Database* db = dbStore.find(name);
+        if (!db) {
+            cout << "Base de datos '" << name << "' no encontrada." << endl;
+            return;
+        }
+        string value = db->getValue(index);
+        if (!value.empty())
+            cout << "Valor en el nodo " << index << " es: " << value << endl;
+        else
+            cout << "Índice fuera de rango." << endl;
+
+    } else if (command == "insert") {
+        if (tokens.size() < 4) {
+            cout << "Uso: RR insert <nombreBD> <valor>" << endl;
+            return;
+        }
+        string name = tokens[2];
+        string value = tokens[3];
+        Database* db = dbStore.find(name);
+        if (!db) {
+            cout << "Base de datos '" << name << "' no encontrada." << endl;
+            return;
+        }
+        if (db->insertValue(value))
+            cout << "Valor '" << value << "' insertado en la base de datos '" << name << "'." << endl;
+        else
+            cout << "La cola está llena." << endl;
+
+    } else if (command == "update") {
+        if (tokens.size() < 5) {
+            cout << "Uso: RR update <nombreBD> <índice> <nuevoValor>" << endl;
+            return;
+        }
+        string name = tokens[2];
+        int index = atoi(tokens[3].c_str());
+        double newVal = atof(tokens[4].c_str());
+        Database* db = dbStore.find(name);
+        if (!db) {
+            cout << "Base de datos '" << name << "' no encontrada." << endl;
+            return;
+        }
+        if (db->queue->updateAt(index, newVal))
+            cout << "Valor en el nodo " << index << " actualizado a " << newVal << "." << endl;
+        else
+            cout << "Índice fuera de rango." << endl;
+
+    } else if (command == "delete") {
+        if (tokens.size() < 3) {
+            cout << "Uso: RR delete <nombreBD>" << endl;
+            return;
+        }
+        string name = tokens[2];
+        if (dbStore.remove(name))
+            cout << "Base de datos '" << name << "' eliminada." << endl;
+        else
+            cout << "Base de datos '" << name << "' no encontrada." << endl;
+
+    } else if (command == "print") {
+        if (tokens.size() < 3) {
+            cout << "Uso: RR print <nombreBD>" << endl;
+            return;
+        }
+        string name = tokens[2];
+        Database* db = dbStore.find(name);
+        if (!db) {
+            cout << "Base de datos '" << name << "' no encontrada." << endl;
+            return;
+        }
+        cout << "Contenido de la base de datos '" << name << "': ";
+        db->queue->printQueue();
+
+    } else if (command == "save") {
+        if (tokens.size() < 3) {
+            cout << "Uso: RR save <filename>" << endl;
+            return;
+        }
+        string filename = tokens[2];
+        dbStore.guardarEnArchivo(filename);
+
+    } else if (command == "load") {
+        if (tokens.size() < 3) {
+            cout << "Uso: RR load <filename>" << endl;
+            return;
+        }
+        string filename = tokens[2];
+        if (dbStore.cargarDesdeArchivo(filename))
+            cout << "Tabla cargada correctamente." << endl;
+        else
+            cout << "Error al cargar la tabla." << endl;
     }
-    infile.close();
-    cout << "Tabla cargada desde archivo: " << filename << endl;
-    return true;
 }
