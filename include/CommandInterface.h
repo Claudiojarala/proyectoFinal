@@ -1,10 +1,9 @@
 #ifndef COMMANDINTERFACE_H
 #define COMMANDINTERFACE_H
 
-#include "Trie.h"
+#include <string>
 #include "CuckooHash.h"
-
-using namespace std;
+#include "Trie.h"
 
 class CommandInterface {
 private:
@@ -13,7 +12,7 @@ private:
 
 public:
     CommandInterface();
-    void processCommand(const string &input);
+    void processCommand(const std::string &input);
 };
 
 #endif // COMMANDINTERFACE_H
