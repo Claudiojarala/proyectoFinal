@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <string>
 
+using namespace std;
+
 class TrieNode {
 public:
     unordered_map<char, TrieNode*> children;
