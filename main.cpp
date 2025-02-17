@@ -1,5 +1,6 @@
-#include "include/CommandInterface.h"
+#include "CommandInterface.h"
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -13,5 +14,6 @@ int main() {
             break;
         ci.processCommand(line);
     }
+
     return 0;
 }
