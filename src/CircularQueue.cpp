@@ -1,6 +1,7 @@
 #include "CircularQueue.h"
 #include <iostream>
 #include <fstream>
+#include <cmath>
 
 using namespace std;
 
@@ -12,13 +13,8 @@ CircularQueue::~CircularQueue() {
     delete[] arr;
 }
 
-bool CircularQueue::isFull() const {
-    return count == capacity;
-}
-
-bool CircularQueue::isEmpty() const {
-    return count == 0;
-}
+bool CircularQueue::isFull() const { return count == capacity; }
+bool CircularQueue::isEmpty() const { return count == 0; }
 
 bool CircularQueue::enqueue(double value) {
     if (isFull())
