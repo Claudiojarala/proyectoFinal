@@ -1,19 +1,22 @@
-#ifndef CIRCULAR_QUEUE_H
-#define CIRCULAR_QUEUE_H
+#ifndef CIRCULARQUEUE_H
+#define CIRCULARQUEUE_H
 
 #include <iostream>
 
+using namespace std;
+
 class CircularQueue {
 private:
-    double* arr;      // Arreglo dinámico para almacenar los valores
-    int capacity;     // Capacidad máxima de la cola
-    int front;        // Índice del primer elemento
-    int rear;         // Índice del último elemento
-    int count;        // Número de elementos actualmente en la cola
+    double* arr;
+    int capacity;
+    int front;
+    int rear;
+    int count;
 
 public:
     CircularQueue(int cap);
     ~CircularQueue();
+
     bool isFull() const;
     bool isEmpty() const;
     bool enqueue(double value);
@@ -25,4 +28,4 @@ public:
     static CircularQueue* deserialize(istream &is);
 };
 
-#endif // CIRCULAR_QUEUE_H
+#endif // CIRCULARQUEUE_H
