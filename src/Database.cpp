@@ -13,6 +13,43 @@ Database::~Database() {
     delete queue;
 }
 
+double Database::stringToDouble(const string& str) const {
+    double value = 0.0;
+    for (char c : str) {
+        value = value * 256 + static_cast<double>(c);
+    }
+    return value;
+}
+
+string Database::doubleToString(double value) const {
+    string result;
+    while (value > 0) {
+        char c = static_cast<char>(fmod(value, 256));
+        result = c + result;
+        value = floor(value / 256);
+    }
+    return result;
+}
+
+bool Database::insertValue(const string& value) {
+    if (dataType == "string") {
+        return queue->enqueue(stringToDouble(value));
+    } else {
+        return queue->enqueue(stod(value));
+    }
+}
+
+string Database::getValue(int index) const {
+    double value;
+    if (!queue->getValueAt(index, value)) {
+        return "";
+    }
+    if (dataType == "string") {
+        return doubleToString(value);
+    }
+    return to_string(value);
+}
+
 void Database::serialize(ostream &os) const {
     size_t nameLen = name.size();
     os.write(reinterpret_cast<const char*>(&nameLen), sizeof(nameLen));
