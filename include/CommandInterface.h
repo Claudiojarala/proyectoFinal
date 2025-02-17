@@ -1,11 +1,8 @@
 #ifndef COMMANDINTERFACE_H
 #define COMMANDINTERFACE_H
 
-#include <string>
-#include "CuckooHash.h"
 #include "Trie.h"
-
-using namespace std;
+#include "CuckooHash.h"
 
 class CommandInterface {
 private:
