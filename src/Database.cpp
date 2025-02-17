@@ -2,7 +2,9 @@
 #include <iostream>
 #include <fstream>
 
-Database::Database(const std::string &n, const std::string &dt, int cap)
+using namespace std;
+
+Database::Database(const string &n, const string &dt, int cap)
     : name(n), dataType(dt), capacity(cap) {
     queue = new CircularQueue(cap);
 }
@@ -11,7 +13,7 @@ Database::~Database() {
     delete queue;
 }
 
-double Database::stringToDouble(const std::string& str) const {
+double Database::stringToDouble(const string& str) const {
     double value = 0.0;
     for (char c : str) {
         value = value * 256 + static_cast<double>(c);
@@ -19,8 +21,8 @@ double Database::stringToDouble(const std::string& str) const {
     return value;
 }
 
-std::string Database::doubleToString(double value) const {
-    std::string result;
+string Database::doubleToString(double value) const {
+    string result;
     while (value > 0) {
         char c = static_cast<char>(fmod(value, 256));
         result = c + result;
@@ -29,7 +31,7 @@ std::string Database::doubleToString(double value) const {
     return result;
 }
 
-bool Database::insertValue(const std::string& value) {
+bool Database::insertValue(const string& value) {
     if (dataType == "string") {
         return queue->enqueue(stringToDouble(value));
     } else {
@@ -37,7 +39,7 @@ bool Database::insertValue(const std::string& value) {
     }
 }
 
-std::string Database::getValue(int index) const {
+string Database::getValue(int index) const {
     double value;
     if (!queue->getValueAt(index, value)) {
         return "";
@@ -45,10 +47,10 @@ std::string Database::getValue(int index) const {
     if (dataType == "string") {
         return doubleToString(value);
     }
-    return std::to_string(value);
+    return to_string(value);
 }
 
-void Database::serialize(std::ostream &os) const {
+void Database::serialize(ostream &os) const {
     size_t nameLen = name.size();
     os.write(reinterpret_cast<const char*>(&nameLen), sizeof(nameLen));
     os.write(name.data(), nameLen);
@@ -59,15 +61,15 @@ void Database::serialize(std::ostream &os) const {
     queue->serialize(os);
 }
 
-Database* Database::deserialize(std::istream &is) {
+Database* Database::deserialize(istream &is) {
     size_t nameLen;
     is.read(reinterpret_cast<char*>(&nameLen), sizeof(nameLen));
-    std::string name;
+    string name;
     name.resize(nameLen);
     is.read(&name[0], nameLen);
     size_t dataTypeLen;
     is.read(reinterpret_cast<char*>(&dataTypeLen), sizeof(dataTypeLen));
-    std::string dataType;
+    string dataType;
     dataType.resize(dataTypeLen);
     is.read(&dataType[0], dataTypeLen);
     int cap;
