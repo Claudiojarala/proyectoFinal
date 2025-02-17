@@ -6,7 +6,6 @@
 using namespace std;
 
 CommandInterface::CommandInterface() : dbStore(11) {
-    // Se insertan los comandos permitidos en el trie.
     trie.insert("create");
     trie.insert("select");
     trie.insert("insert");
