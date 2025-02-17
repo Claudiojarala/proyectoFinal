@@ -4,11 +4,13 @@
 #include <unordered_map>
 #include <string>
 
+using namespace std;
+
 class TrieNode {
 public:
-    std::unordered_map<char, TrieNode*> children;
+    unordered_map<char, TrieNode*> children;
     bool isEnd;
-    std::string command;
+    string command;
     TrieNode();
 };
 
@@ -20,12 +22,12 @@ private:
 public:
     Trie();
     ~Trie();
-    void insert(const std::string &word);
-    bool search(const std::string &word);
-    std::string suggest(const std::string &prefix);
+    void insert(const string &word);
+    bool search(const string &word);
+    string suggest(const string &prefix);
 
 private:
-    std::string findCommand(TrieNode* node);
+    string findCommand(TrieNode* node);
 };
 
 #endif // TRIE_H
