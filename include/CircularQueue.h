@@ -2,16 +2,15 @@
 #define CIRCULARQUEUE_H
 
 #include <iostream>
-#include <ostream>
-#include <istream>
+#include <string>
 
 class CircularQueue {
 private:
-    double* arr;
-    int capacity;
-    int front;
-    int rear;
-    int count;
+    double* arr;      // Arreglo dinámico para almacenar los valores
+    int capacity;     // Capacidad máxima de la cola
+    int front;        // Índice del primer elemento
+    int rear;         // Índice del último elemento
+    int count;        // Número de elementos actualmente en la cola
 
 public:
     CircularQueue(int cap);
