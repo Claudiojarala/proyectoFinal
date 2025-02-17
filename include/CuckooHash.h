@@ -1,5 +1,5 @@
-#ifndef CUCKOOHASH_H
-#define CUCKOOHASH_H
+#ifndef CUCKOO_HASH_H
+#define CUCKOO_HASH_H
 
 #include <vector>
 #include "Database.h"
@@ -26,4 +26,4 @@ public:
     bool cargarDesdeArchivo(const string &filename);
 };
 
-#endif // CUCKOOHASH_H
+#endif // CUCKOO_HASH_H
