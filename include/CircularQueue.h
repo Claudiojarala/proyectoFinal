@@ -2,8 +2,8 @@
 #define CIRCULARQUEUE_H
 
 #include <iostream>
-
-using namespace std;
+#include <ostream>
+#include <istream>
 
 class CircularQueue {
 private:
@@ -16,7 +16,6 @@ private:
 public:
     CircularQueue(int cap);
     ~CircularQueue();
-
     bool isFull() const;
     bool isEmpty() const;
     bool enqueue(double value);
@@ -24,8 +23,8 @@ public:
     void printQueue();
     bool getValueAt(int index, double &value);
     bool updateAt(int index, double newVal);
-    void serialize(ostream &os) const;
-    static CircularQueue* deserialize(istream &is);
+    void serialize(std::ostream &os) const;
+    static CircularQueue* deserialize(std::istream &is);
 };
 
 #endif // CIRCULARQUEUE_H
