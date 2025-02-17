@@ -4,8 +4,6 @@
 #include <string>
 #include "CircularQueue.h"
 
-using namespace std;
-
 struct Database {
     string name;
     string dataType;
@@ -14,6 +12,10 @@ struct Database {
 
     Database(const string &n, const string &dt, int cap);
     ~Database();
+    double stringToDouble(const string& str) const;
+    string doubleToString(double value) const;
+    bool insertValue(const string& value);
+    string getValue(int index) const;
     void serialize(ostream &os) const;
     static Database* deserialize(istream &is);
 };
