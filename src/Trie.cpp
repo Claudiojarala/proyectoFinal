@@ -1,8 +1,6 @@
 #include "Trie.h"
 #include <iostream>
 
-using namespace std;
-
 TrieNode::TrieNode() : isEnd(false) {}
 
 Trie::Trie() {
@@ -20,7 +18,7 @@ void Trie::clear(TrieNode* node) {
     delete node;
 }
 
-void Trie::insert(const string &word) {
+void Trie::insert(const std::string &word) {
     TrieNode* node = root;
     for (char c : word) {
         if (node->children.find(c) == node->children.end())
@@ -31,7 +29,7 @@ void Trie::insert(const string &word) {
     node->command = word;
 }
 
-bool Trie::search(const string &word) {
+bool Trie::search(const std::string &word) {
     TrieNode* node = root;
     for (char c : word) {
         if (node->children.find(c) == node->children.end())
@@ -41,7 +39,7 @@ bool Trie::search(const string &word) {
     return node->isEnd;
 }
 
-string Trie::suggest(const string &prefix) {
+std::string Trie::suggest(const std::string &prefix) {
     TrieNode* node = root;
     for (char c : prefix) {
         if (node->children.find(c) == node->children.end())
@@ -51,12 +49,12 @@ string Trie::suggest(const string &prefix) {
     return findCommand(node);
 }
 
-string Trie::findCommand(TrieNode* node) {
+std::string Trie::findCommand(TrieNode* node) {
     if (node->isEnd) {
         return node->command; // Retorna el comando si es final.
     }
     for (auto &p : node->children) {
-        string result = findCommand(p.second);
+        std::string result = findCommand(p.second);
         if (!result.empty()) {
             return result; // Retorna el primer comando encontrado.
         }
