@@ -33,9 +33,9 @@ string Database::doubleToString(double value) const {
 
 bool Database::insertValue(const string& value) {
     if (dataType == "string") {
-        return queue->enqueue(stringToDouble(value));
+        return queue->enqueue(stringToDouble(value)); // Convert string to double for storage
     } else {
-        return queue->enqueue(stod(value));
+        return queue->enqueue(stod(value)); // Convert string to double for numeric types
     }
 }
 
@@ -45,9 +45,9 @@ string Database::getValue(int index) const {
         return "";
     }
     if (dataType == "string") {
-        return doubleToString(value);
+        return doubleToString(value); // Convert double back to string for retrieval
     }
-    return to_string(value);
+    return to_string(value); // For numeric types, return as string
 }
 
 void Database::serialize(ostream &os) const {
