@@ -1,30 +1,31 @@
-#ifndef CUCKOOHASH_H
-#define CUCKOOHASH_H
+#ifndef CIRCULARQUEUE_H
+#define CIRCULARQUEUE_H
 
-#include <vector>
+#include <iostream>
 #include <string>
-#include "Database.h"
 
-class CuckooHash {
+using namespace std;
+
+class CircularQueue {
 private:
-    std::vector<Database*> table1;
-    std::vector<Database*> table2;
-    int capacity;
-    int totalElements;
-    const int maxLoop = 32;
-
-    int hash1(const std::string &key) const;
-    int hash2(const std::string &key) const;
-    void rehash();
+    double* arr;      // Arreglo dinámico para almacenar los valores
+    int capacity;     // Capacidad máxima de la cola
+    int front;        // Índice del primer elemento
+    int rear;         // Índice del último elemento
+    int count;        // Número de elementos actualmente en la cola
 
 public:
-    CuckooHash(int cap = 11);
-    ~CuckooHash();
-    bool insert(Database* db);
-    Database* find(const std::string &name);
-    bool remove(const std::string &name);
-    void guardarEnArchivo(const std::string &filename) const;
-    bool cargarDesdeArchivo(const std::string &filename);
+    CircularQueue(int cap);
+    ~CircularQueue();
+    bool isFull() const;
+    bool isEmpty() const;
+    bool enqueue(double value);
+    bool dequeue(double &value);
+    void printQueue();
+    bool getValueAt(int index, double &value);
+    bool updateAt(int index, double newVal);
+    void serialize(ostream &os) const;
+    static CircularQueue* deserialize(istream &is);
 };
 
-#endif // CUCKOOHASH_H
+#endif // CIRCULARQUEUE_H
