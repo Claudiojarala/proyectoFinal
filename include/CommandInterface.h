@@ -1,8 +1,8 @@
-#ifndef COMMANDINTERFACE_H
-#define COMMANDINTERFACE_H
+#ifndef COMMAND_INTERFACE_H
+#define COMMAND_INTERFACE_H
 
-#include "Trie.h"
 #include "CuckooHash.h"
+#include "Trie.h"
 
 class CommandInterface {
 private:
@@ -14,4 +14,4 @@ public:
     void processCommand(const string &input);
 };
 
-#endif // COMMANDINTERFACE_H
+#endif // COMMAND_INTERFACE_H
