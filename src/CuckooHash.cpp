@@ -2,8 +2,6 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
-
 CuckooHash::CuckooHash(int cap) : capacity(cap), totalElements(0) {
     table1.resize(capacity, nullptr);
     table2.resize(capacity, nullptr);
@@ -20,21 +18,21 @@ CuckooHash::~CuckooHash() {
     }
 }
 
-int CuckooHash::hash1(const string &key) const {
-    hash<string> hash_fn;
+int CuckooHash::hash1(const std::string &key) const {
+    std::hash<std::string> hash_fn;
     return hash_fn(key) % capacity;
 }
 
-int CuckooHash::hash2(const string &key) const {
-    hash<string> hash_fn;
+int CuckooHash::hash2(const std::string &key) const {
+    std::hash<std::string> hash_fn;
     return (hash_fn(key) * 7) % capacity;
 }
 
 void CuckooHash::rehash() {
     int oldCapacity = capacity;
     capacity *= 2;
-    vector<Database*> oldTable1 = table1;
-    vector<Database*> oldTable2 = table2;
+    std::vector<Database*> oldTable1 = table1;
+    std::vector<Database*> oldTable2 = table2;
 
     table1.clear();
     table2.clear();
@@ -51,7 +49,7 @@ void CuckooHash::rehash() {
 }
 
 bool CuckooHash::insert(Database* db) {
-    string key = db->name;
+    std::string key = db->name;
     int loopCount = 0;
     Database* item = db;
     bool inTable1 = true;
@@ -63,7 +61,7 @@ bool CuckooHash::insert(Database* db) {
                 totalElements++;
                 return true;
             } else {
-                swap(item, table1[pos]);
+                std::swap(item, table1[pos]);
                 inTable1 = false;
             }
         } else {
@@ -73,7 +71,7 @@ bool CuckooHash::insert(Database* db) {
                 totalElements++;
                 return true;
             } else {
-                swap(item, table2[pos]);
+                std::swap(item, table2[pos]);
                 inTable1 = true;
             }
         }
@@ -83,7 +81,7 @@ bool CuckooHash::insert(Database* db) {
     return insert(item);
 }
 
-Database* CuckooHash::find(const string &name) {
+Database* CuckooHash::find(const std::string &name) {
     int pos1 = hash1(name);
     if (pos1 < (int)table1.size() && table1[pos1] && table1[pos1]->name == name)
         return table1[pos1];
@@ -93,7 +91,7 @@ Database* CuckooHash::find(const string &name) {
     return nullptr;
 }
 
-bool CuckooHash::remove(const string &name) {
+bool CuckooHash::remove(const std::string &name) {
     int pos1 = hash1(name);
     if (pos1 < (int)table1.size() && table1[pos1] && table1[pos1]->name == name) {
         delete table1[pos1];
@@ -111,10 +109,10 @@ bool CuckooHash::remove(const string &name) {
     return false;
 }
 
-void CuckooHash::guardarEnArchivo(const string &filename) const {
-    ofstream outfile(filename, ios::binary | ios::trunc);
+void CuckooHash::guardarEnArchivo(const std::string &filename) const {
+    std::ofstream outfile(filename, std::ios::binary | std::ios::trunc);
     if (!outfile.is_open()) {
-        cerr << "No se pudo abrir el archivo " << filename << " para guardar." << endl;
+        std::cerr << "No se pudo abrir el archivo " << filename << " para guardar." << std::endl;
         return;
     }
     outfile.write(reinterpret_cast<const char*>(&capacity), sizeof(capacity));
@@ -134,13 +132,13 @@ void CuckooHash::guardarEnArchivo(const string &filename) const {
         }
     }
     outfile.close();
-    cout << "Tabla guardada en archivo: " << filename << endl;
+    std::cout << "Tabla guardada en archivo: " << filename << std::endl;
 }
 
-bool CuckooHash::cargarDesdeArchivo(const string &filename) {
-    ifstream infile(filename, ios::binary);
+bool CuckooHash::cargarDesdeArchivo(const std::string &filename) {
+    std::ifstream infile(filename, std::ios::binary);
     if (!infile.is_open()) {
-        cerr << "No se pudo abrir el archivo " << filename << " para cargar." << endl;
+        std::cerr << "No se pudo abrir el archivo " << filename << " para cargar." << std::endl;
         return false;
     }
 
@@ -165,6 +163,6 @@ bool CuckooHash::cargarDesdeArchivo(const string &filename) {
         }
     }
     infile.close();
-    cout << "Tabla cargada desde archivo: " << filename << endl;
+    std::cout << "Tabla cargada desde archivo: " << filename << std::endl;
     return true;
 }
