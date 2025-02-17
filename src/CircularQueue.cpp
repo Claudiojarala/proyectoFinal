@@ -3,6 +3,8 @@
 #include <fstream>
 #include <cmath>
 
+using namespace std;
+
 CircularQueue::CircularQueue(int cap) : capacity(cap), front(0), rear(-1), count(0) {
     arr = new double[capacity];
 }
@@ -39,15 +41,15 @@ bool CircularQueue::dequeue(double &value) {
 
 void CircularQueue::printQueue() {
     if (isEmpty()) {
-        std::cout << "La cola está vacía." << std::endl;
+        cout << "La cola está vacía." << endl;
         return;
     }
     int idx = front;
     for (int i = 0; i < count; i++) {
-        std::cout << arr[idx] << " ";
+        cout << arr[idx] << " ";
         idx = (idx + 1) % capacity;
     }
-    std::cout << std::endl;
+    cout << endl;
 }
 
 bool CircularQueue::getValueAt(int index, double &value) {
@@ -66,7 +68,7 @@ bool CircularQueue::updateAt(int index, double newVal) {
     return true;
 }
 
-void CircularQueue::serialize(std::ostream &os) const {
+void CircularQueue::serialize(ostream &os) const {
     os.write(reinterpret_cast<const char*>(&capacity), sizeof(capacity));
     os.write(reinterpret_cast<const char*>(&count), sizeof(count));
     for (int i = 0; i < count; ++i) {
@@ -76,7 +78,7 @@ void CircularQueue::serialize(std::ostream &os) const {
     }
 }
 
-CircularQueue* CircularQueue::deserialize(std::istream &is) {
+CircularQueue* CircularQueue::deserialize(istream &is) {
     int cap, cnt;
     is.read(reinterpret_cast<char*>(&cap), sizeof(cap));
     is.read(reinterpret_cast<char*>(&cnt), sizeof(cnt));
